@@ -11,13 +11,14 @@
 <div class="shell">
 <header class="topbar">
     <div class="appmark" aria-hidden="true">TS</div>
-    <div class="headcopy"><b>TS Studio</b><span>ANDROID · 2.0 ALPHA</span></div>
+    <div class="headcopy"><b>TS Studio</b><span>ANDROID · 2.1 BETA</span></div>
     <span class="offline"><span class="pulse"></span> OFFLINE</span>
 </header>
 <section class="workspace-strip" id="workspaceStrip"><span class="dot"></span><div><b id="fileName">Chưa mở file save</b><small id="fileMeta">Mở mGameInfo.xml hoặc container 0x79 để bắt đầu</small></div><span class="statebadge" id="dirtyState">SẴN SÀNG</span></section>
 <nav class="nav-scroll" aria-label="Chức năng">
     <button class="nav active" data-page="home">⌂ <span>Tổng quan</span></button>
     <button class="nav" data-page="profile">◫ <span>Hồ sơ</span></button>
+    <button class="nav" data-page="stats">◈ <span>Chỉ số nâng cao</span></button>
     <button class="nav" data-page="decor">✿ <span>Decoration</span></button>
     <button class="nav" data-page="avatar">◎ <span>Avatar</span></button>
     <button class="nav" data-page="barn">▣ <span>Barn</span></button>
@@ -41,6 +42,32 @@
  <div class="section-head"><div><div class="kicker">PROFILE</div><h1>Hồ sơ thành phố</h1></div><span class="muted">Sửa từng trường</span></div>
  <div class="grid2"><div class="panel"><h3>Tiền và tài nguyên</h3><label>Coins · money<input id="money" type="number" min="0" max="2000000000" inputmode="numeric"></label><button class="btn primary" data-command="set-money">Áp dụng Coins</button><label>Cash · moneyCash<input id="moneyCash" type="number" min="0" max="2000000000" inputmode="numeric"></label><button class="btn secondary" data-command="set-cash">Áp dụng Cash</button></div>
  <div class="panel"><h3>Level / XP</h3><label>Town Level<input id="level" type="number" min="1" max="10000" inputmode="numeric"></label><button class="btn primary" data-command="set-level">Áp dụng Level</button><div class="warn">Việc sửa Level ở đây chỉ tác động mGameInfo. Phải đồng bộ LocalInfo trước khi ghi vào game bằng quy trình phù hợp.</div><h3>Ngày bắt đầu</h3><div class="formrow"><label>Năm<input id="startYear" type="number" min="1970" max="2100" value="2024"></label><label>Tháng<input id="startMonth" type="number" min="1" max="12" value="1"></label></div><button class="btn secondary" data-command="set-start">Áp dụng ngày bắt đầu</button></div></div>
+</section>
+<section class="page" id="page-stats">
+ <div class="section-head"><div><div class="kicker">TSVIP V1.39</div><h1>Chỉ số và tiến độ</h1></div></div>
+ <p class="muted">Dùng trực tiếp các hàm xử lý gốc, có xác minh XML và hoàn tác. Một số trường sẽ được tạo trong XML nếu chưa có, theo logic bản Windows.</p>
+ <div class="grid2">
+  <div class="panel"><h3>Match-3 / Lives</h3>
+   <label>M3 LVL<input id="vM3" type="number" min="50" max="2147483647"></label><button class="btn primary" data-command="set-m3">Áp dụng M3 LVL</button>
+   <label>First Win<input id="vFirst" type="number" min="0" max="2147483647"></label><button class="btn secondary" data-command="set-first">Áp dụng First Win</button>
+   <label>Lives<input id="vLives" type="number" min="0" max="2147483647"></label><button class="btn secondary" data-command="set-lives">Áp dụng Lives</button>
+  </div>
+  <div class="panel"><h3>Profile Statistics</h3>
+   <label>Help Count<input id="vHelp" type="number" min="0" max="2147483647"></label><button class="btn secondary" data-command="set-help">Áp dụng Help</button>
+   <label>Card Count<input id="vCard" type="number" min="0" max="2147483647"></label><button class="btn secondary" data-command="set-card">Áp dụng Card</button>
+   <label>Regatta Statistics<input id="vRegata" type="number" min="0" max="2147483647"></label><button class="btn secondary" data-command="set-regata">Áp dụng Regatta Stats</button>
+   <label>Expedition Energy<input id="vEnergy" type="number" min="0" max="2147483647"></label><button class="btn secondary" data-command="set-energy">Áp dụng Energy</button>
+  </div>
+  <div class="panel"><h3>Mine / Regatta Tasks</h3>
+   <label>Mine Depth<input id="vMine" type="number" min="0" max="2147483647"></label><button class="btn secondary" data-command="set-mine">Áp dụng Mine Depth</button>
+   <label>Regatta Completed Tasks<input id="vTasks" type="number" min="0" max="10000" value="1"></label><button class="btn secondary" data-command="set-tasks">Áp dụng Regatta Tasks</button>
+  </div>
+  <div class="panel"><h3>Cards / Market</h3>
+   <button class="btn secondary" data-command="all-cards">All Cards</button>
+   <button class="btn secondary" data-command="my-cards">My Cards</button>
+   <label>Market Slots<input id="vMarket" type="number" min="0" max="1000" value="50"></label><button class="btn secondary" data-command="set-market">Áp dụng Market Slots</button>
+  </div>
+ </div>
 </section>
 <section class="page" id="page-decor"><div class="section-head"><div><div class="kicker">DECORATIONS</div><h1>Trang trí thành phố</h1></div><span class="muted" id="decorCounter">0 mục</span></div>
  <div class="panel"><div class="formrow"><label>Nhóm<select id="decorGroup"><option value="normal">Trang trí thường</option><option value="special">Special / Expedition</option><option value="sign">Biển tên</option></select></label><label>Số lượng (1–20)<input id="decorCount" type="number" value="1" min="1" max="20"></label></div><label>Tìm ID / tên<input id="decorSearch" placeholder="Nhập tên trang trí..."></label><div class="list-head"><span>Chọn món cần điều chỉnh</span><button class="textbutton" data-command="select-visible-decor">Chọn mục đang hiển thị</button></div><div id="decorList" class="catalog"></div><button class="btn primary wide" data-command="apply-decor">Áp dụng vào XML làm việc</button></div>
@@ -67,7 +94,7 @@
 </main>
 <div id="toast" class="toast" role="status"></div>
 <div id="busy" class="busy hidden"><div class="spinner"></div><p>Đang xử lý...</p></div>
-<footer class="footer">TS Studio 2.0 alpha · Offline workspace · Không tự ghi game</footer>
+<footer class="footer">TS Studio 2.1 beta · Offline workspace · Không tự ghi game</footer>
 </div>
 <script src="app.js"></script>
 </body></html>

@@ -76,6 +76,16 @@ function applyState(updated) {
   $('#statCoins').textContent = fmt(state.money);
   $('#statCash').textContent = fmt(state.moneyCash);
   $('#statLevel').textContent = fmt(state.level);
+  const advanced = {vM3:'m3level',vFirst:'firstwin',vLives:'lives',vMine:'minedepth'};
+  for (const [id,key] of Object.entries(advanced)) {
+    const el = $('#' + id);
+    if (el && state[key] !== null && state[key] !== undefined) el.value = state[key];
+  }
+  for (const [id,key] of Object.entries({vHelp:'help',vCard:'card',vRegata:'regata',vEnergy:'energy'})) {
+    const vals = state[key];
+    const value = vals && Object.values(vals).find(v=>v !== null && v !== undefined);
+    if (value !== undefined) $('#' + id).value = value;
+  }
   for (const field of ['money','moneyCash','level']) {
     const input = $('#' + field);
     if (input && state[field] !== null && state[field] !== undefined) input.value = state[field];
@@ -245,6 +255,18 @@ const commands = {
  'export-original': () => exportFile('original'),
  'undo': async () => { if (!requireFile())return;const r=await work(()=>bridge('undo'));if(r){applyState(r.state);toast('Đã hoàn tác.');log('Undo');}},
  'reset': async () => {if(!requireFile()||!confirm('Quay về XML đã nhập? Mọi chỉnh sửa chưa xuất sẽ bị bỏ.'))return;const r=await work(()=>bridge('reset'));if(r){applyState(r.state);toast('Đã đặt lại về bản gốc.');log('Reset workspace');}},
+ 'set-m3':()=>applyChange('m3level',{value:$('#vM3').value}),
+ 'set-first':()=>applyChange('firstwin',{value:$('#vFirst').value}),
+ 'set-lives':()=>applyChange('lives',{value:$('#vLives').value}),
+ 'set-help':()=>applyChange('help',{value:$('#vHelp').value}),
+ 'set-card':()=>applyChange('card',{value:$('#vCard').value}),
+ 'set-regata':()=>applyChange('regata',{value:$('#vRegata').value}),
+ 'set-energy':()=>applyChange('energy',{value:$('#vEnergy').value}),
+ 'set-mine':()=>applyChange('minedepth',{value:$('#vMine').value}),
+ 'set-tasks':()=>applyChange('regattatasks',{value:$('#vTasks').value}),
+ 'set-market':()=>applyChange('market',{value:$('#vMarket').value}),
+ 'all-cards':()=>applyChange('allcards',{},'Cập nhật tất cả thẻ trong save?'),
+ 'my-cards':()=>applyChange('mycards',{},'Cập nhật thẻ đang sở hữu?'),
  'set-money':()=>applyChange('setvar',{key:'money',value:$('#money').value}),
  'set-cash':()=>applyChange('setvar',{key:'moneyCash',value:$('#moneyCash').value}),
  'set-level':()=>applyChange('level',{value:$('#level').value},'Chỉ thay Level/XP của mGameInfo, chưa đồng bộ LocalInfo. Tiếp tục?'),

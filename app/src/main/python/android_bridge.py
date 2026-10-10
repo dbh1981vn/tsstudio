@@ -48,6 +48,17 @@ def _summary() -> dict:
         "undo_available": bool(_HISTORY),
         "can_export_template": bool(_CONTAINER and _CONTAINER[:1] == b'\x79'),
     }
+    for label, reader in (("m3level", B.read_match3_level), ("firstwin", B.read_first_win),
+                          ("lives", B.read_lives), ("minedepth", B.read_mine_depth)):
+        try:
+            result[label] = reader(_CURRENT)
+        except Exception:
+            result[label] = None
+    for label in ("help", "card", "regata", "energy"):
+        try:
+            result[label] = B.read_profile_stat(_CURRENT, label)
+        except Exception:
+            result[label] = None
     for key in ("money", "moneyCash", "gameStartDate"):
         try:
             attrs = B.read_var(_CURRENT, key)
@@ -153,6 +164,35 @@ def _set_change(action: str, p: dict) -> dict:
     elif action == 'academy':
         updated = B.set_academy(xml, p['group'], p['ids'], p.get('bonuses', {}))
         report = {"group": p['group'], "count": len(p['ids'])}
+    elif action == 'm3level':
+        updated, report = B.set_match3_level(xml, int(p['value']))
+    elif action == 'firstwin':
+        updated, report = B.set_first_win(xml, int(p['value']))
+    elif action == 'lives':
+        updated, report = B.set_lives(xml, int(p['value']))
+    elif action in ('help', 'card', 'regata', 'energy'):
+        updated, report = B.set_profile_stat(xml, action, int(p['value']))
+    elif action == 'minedepth':
+        updated, report = B.set_mine_depth(xml, int(p['value']))
+    elif action == 'allcards':
+        updated, report = B.update_owned_cards(xml, True)
+    elif action == 'mycards':
+        updated, report = B.update_owned_cards(xml, False)
+    elif action == 'regattatasks':
+        updated = B.set_regatta_tasks(xml, int(p['value']))
+        report = {'tasks': int(p['value'])}
+    elif action == 'market':
+        updated = B.set_market_slots(xml, int(p['value']))
+        report = {'slots': int(p['value'])}
+    elif action == 'quantities':
+        values = p.get('values', {})
+        if not isinstance(values, dict) or not values or len(values) > 100:
+            raise B.SaveToolError('Cần một đối tượng JSON chứa 1–100 mục Quantities')
+        allowed = set(B.TSVIP_QUANTITIES) | set(B.TSVIP_COUPONS)
+        if not set(values).issubset(allowed):
+            raise B.SaveToolError('Có mục Quantities ngoài danh sách gốc')
+        updated = B.set_quantities(xml, {k: int(v) for k, v in values.items()})
+        report = {'quantities': values}
     elif action == 'genericvar':
         key = str(p['key'])
         if not re.fullmatch(r'[A-Za-z_][A-Za-z_0-9.:-]{0,127}', key):
@@ -222,7 +262,7 @@ def command(serialized: str) -> str:
         if action == 'init':
             _DATA_DIR = Path(str(p['data_dir'])).resolve()
             _DATA_DIR.mkdir(parents=True, exist_ok=True)
-            result = {'state': _summary(), 'version': '2.0.0-alpha1'}
+            result = {'state': _summary(), 'version': '2.1.0-beta1'}
         elif action == 'state':
             result = {'state': _summary()}
         elif action == 'import':
