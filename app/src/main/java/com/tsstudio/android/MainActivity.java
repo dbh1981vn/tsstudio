@@ -42,6 +42,7 @@ public final class MainActivity extends Activity {
     private int pendingRequest = -1;
     private String outputPath;
     private PyObject pyAdapter;
+    private String rootPackage = "com.playrix.township.vn";
 
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,6 +125,8 @@ public final class MainActivity extends Activity {
                 executor.execute(() -> prepareExport(id, args));
             } else if ("importRoot".equals(action)) {
                 executor.execute(() -> importRoot(id, args));
+            } else if ("applyRoot".equals(action)) {
+                executor.execute(() -> applyRoot(id, args));
             } else {
                 executor.execute(() -> {
                     try {
@@ -268,8 +271,92 @@ public final class MainActivity extends Activity {
             args.put("path", dest.getCanonicalPath());
             args.put("name", "mGameInfo.xml");
             args.put("origin", "root-read:" + packageId);
+            rootPackage = packageId;
             send(id, execute("import", args));
         } catch (Exception e) { error(id, e.getMessage()); }
+    }
+
+    private static String allowedPackage(String value) {
+        if (!"com.playrix.township.vn".equals(value) && !"com.playrix.township".equals(value))
+            throw new SecurityException("Package Township không hợp lệ");
+        return value;
+    }
+
+    private String runRoot(String command) throws Exception {
+        Process process = new ProcessBuilder("su", "-c", command).redirectErrorStream(true).start();
+        StringBuilder output = new StringBuilder();
+        Thread reader = new Thread(() -> {
+            try (InputStream stream = process.getInputStream()) {
+                byte[] buf = new byte[2048]; int n;
+                while ((n = stream.read(buf)) != -1 && output.length() < 16000)
+                    output.append(new String(buf, 0, n, StandardCharsets.UTF_8));
+            } catch (Exception ignored) {}
+        });
+        reader.setDaemon(true); reader.start();
+        if (!process.waitFor(35, TimeUnit.SECONDS)) {
+            process.destroyForcibly(); throw new IllegalStateException("ROOT không phản hồi trong 35 giây");
+        }
+        reader.join(1000);
+        if (process.exitValue() != 0) throw new IllegalStateException("Lệnh ROOT thất bại: " + output);
+        return output.toString();
+    }
+
+    /** Explicit user-confirmed apply with backup, stop, atomic replacement and verification. */
+    private void applyRoot(int id, JSONObject params) {
+        try {
+            String pkg = allowedPackage(params.optString("package", rootPackage));
+            if (!pkg.equals(rootPackage))
+                throw new IllegalStateException("Package đích khác với package đã đọc. Hãy đọc lại ROOT trước.");
+            JSONObject state = new JSONObject(execute("state", new JSONObject())).getJSONObject("result").getJSONObject("state");
+            if (!state.optBoolean("loaded") || !state.optString("origin").equals("root-read:" + pkg))
+                throw new IllegalStateException("Phải đọc save trực tiếp từ đúng package ROOT trước khi ghi");
+            if (!params.optBoolean("confirmed")) throw new SecurityException("Chưa xác nhận ghi vào game");
+            JSONObject export = new JSONObject(execute("export", new JSONObject().put("mode", "standalone"))).getJSONObject("result");
+            File encoded = new File(export.getString("path"));
+            if (!encoded.isFile() || encoded.length() == 0 || encoded.length() > MAX_SIZE)
+                throw new IllegalStateException("Save mã hóa không hợp lệ");
+            String path = "/data/data/" + pkg + "/saves/mGameInfo.xml";
+            String staged = "/data/local/tmp/tsstudio_" + android.os.Process.myPid() + ".bin";
+            String backup = "/data/data/" + pkg + "/saves/mGameInfo.xml.tsstudio.bak";
+            // First check target and get original checksum, before any write.
+            String original = runRoot("test -f " + quoteShell(path) + " && sha256sum " + quoteShell(path));
+            String originalHash = original.trim().split("\\s+")[0];
+            // Root read on import is cached: prevent overwriting a save changed since import.
+            File imported = new File(getFilesDir(), "input_from_root.bin");
+            if (!imported.isFile()) throw new IllegalStateException("Thiếu bản save ROOT đã đọc");
+            String importedHash = sha256(imported);
+            if (!originalHash.equalsIgnoreCase(importedHash))
+                throw new IllegalStateException("Save trong game đã thay đổi từ lúc đọc. Hãy đọc lại ROOT trước khi Apply.");
+            // Stage in app storage, root copies into same directory for atomic rename.
+            String source = encoded.getCanonicalPath();
+            String temp = path + ".tsstudio.tmp";
+            String cmd = "set -e; am force-stop " + quoteShell(pkg)
+                + "; test -f " + quoteShell(path)
+                + "; test "$(sha256sum " + quoteShell(path) + " | cut -d  -f1)" = " + quoteShell(importedHash)
+                + "; cp -p " + quoteShell(path) + " " + quoteShell(backup)
+                + "; cp " + quoteShell(source) + " " + quoteShell(temp)
+                + "; chown --reference=" + quoteShell(path) + " " + quoteShell(temp)
+                + "; chmod --reference=" + quoteShell(path) + " " + quoteShell(temp)
+                + "; (chcon --reference=" + quoteShell(path) + " " + quoteShell(temp) + " || restorecon " + quoteShell(temp) + ")"
+                + "; mv -f " + quoteShell(temp) + " " + quoteShell(path)
+                + "; test "$(sha256sum " + quoteShell(path) + " | cut -d  -f1)" = " + quoteShell(sha256(encoded));
+            runRoot(cmd);
+            JSONObject result = new JSONObject().put("ok", true).put("result", new JSONObject()
+                .put("package", pkg).put("path", path).put("backup", backup)
+                .put("bytes", encoded.length()).put("verified", true));
+            send(id, result.toString());
+        } catch (Exception e) { error(id, e.getMessage()); }
+    }
+
+    private static String sha256(File file) throws Exception {
+        java.security.MessageDigest digest = java.security.MessageDigest.getInstance("SHA-256");
+        try (InputStream in = new FileInputStream(file)) {
+            byte[] buffer = new byte[65536]; int n;
+            while ((n = in.read(buffer)) != -1) digest.update(buffer, 0, n);
+        }
+        StringBuilder result = new StringBuilder();
+        for (byte b : digest.digest()) result.append(String.format(java.util.Locale.ROOT, "%02x", b & 255));
+        return result.toString();
     }
 
     @Override protected void onDestroy() {

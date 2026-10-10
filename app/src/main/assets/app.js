@@ -219,13 +219,24 @@ async function openFile() {
     toast('Đã đọc file save.');
   }
 }
+function selectedRootPackage() { return $('#rootPackage').value; }
 async function openRoot() {
-  const choice = prompt('LDPlayer ROOT: Nhập 1 để đọc Township VN, 2 để đọc Township quốc tế. Chỉ đọc, không ghi game.', '1');
-  if (choice === null) return;
-  if (choice !== '1' && choice !== '2') {toast('Lựa chọn không hợp lệ', true); return;}
-  const packageName = choice === '1' ? 'com.playrix.township.vn' : 'com.playrix.township';
+  const packageName = selectedRootPackage();
   const answer = await work(() => bridge('importRoot', {package: packageName}));
-  if (answer) { applyState(answer.state); toast('Đã đọc ROOT, chưa ghi vào trò chơi.'); log('ROOT READ: ' + packageName); }
+  if (answer) { applyState(answer.state); toast('Đã đọc save ROOT.'); log('ROOT READ: ' + packageName); }
+}
+async function applyRoot() {
+  if (!requireFile()) return;
+  const packageName = selectedRootPackage();
+  if (state.origin !== 'root-read:' + packageName) {
+    toast('Phải đọc lại save ROOT từ đúng package trước khi Apply.', true); return;
+  }
+  if (!confirm('GHI SAVE VÀO GAME\n\nĐích: /data/data/' + packageName + '/saves/mGameInfo.xml\n\nỨng dụng sẽ dừng Township, sao lưu file gốc và ghi file mã hóa mới. Tiếp tục?')) return;
+  const result = await work(() => bridge('applyRoot', {package:packageName, confirmed:true}));
+  if (result) {
+    toast('Đã ghi ROOT và xác minh SHA-256.');
+    log('ROOT APPLY: ' + result.path + ' | backup: ' + result.backup);
+  }
 }
 async function loadHistory() {
   const result = await work(() => bridge('history'));
@@ -249,6 +260,7 @@ async function loadHistory() {
 const commands = {
  'open': openFile,
  'root': openRoot,
+ 'apply-root': applyRoot,
  'export-xml': () => exportFile('xml'),
  'export-standalone': () => exportFile('standalone'),
  'export-template': () => exportFile('template'),

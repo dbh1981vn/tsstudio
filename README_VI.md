@@ -95,3 +95,9 @@ python -m unittest discover -s tests -v
 - Đầu ra Encode độc lập được kiểm tra bằng `B.decode_save(result) == canonical_xml` rồi mới ghi.
 - Python module có nhiều chức năng Windows/ADB cũ để bảo toàn thuật toán, nhưng app Android không gọi các hàm đó và không thể giả định ADB thực thi bên trong giả lập.
 - Giao diện cần hoạt động trước khi tuyên bố tính năng hoàn thiện. Test Python chỉ xác minh nghiệp vụ phần đã chuyển.
+
+
+## ROOT Apply (v2.2)
+Chọn PACKAGE_NAME trên trang chủ, bấm **Đọc save ROOT**, chỉnh sửa, rồi **Apply trực tiếp vào game**. Android sẽ yêu cầu cấp quyền `su` nếu trình quản lý ROOT hỗ trợ. Chỉ hai package `com.playrix.township.vn` và `com.playrix.township` được chấp nhận. Ứng dụng kiểm tra SHA-256 để không ghi đè save đã thay đổi, dừng game, tạo `mGameInfo.xml.tsstudio.bak`, ghi file 0x79 đã encode, khôi phục owner/quyền/SELinux và xác minh SHA-256. Nếu save thay đổi sau khi đọc, phải đọc lại trước khi ghi. Cần tự backup cả LocalInfo nếu dự định sửa Level.
+
+**Chưa được kiểm thử trực tiếp trên LDPlayer/MuMu/rooted phone.** Một số bản Android/ROM có thể từ chối `su`, `chown --reference`, `chcon --reference` hoặc đường dẫn khác `/data/data/...`. Trường hợp đó thao tác sẽ báo lỗi, không khẳng định đã ghi thành công.
