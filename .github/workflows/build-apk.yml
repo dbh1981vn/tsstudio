@@ -56,4 +56,4 @@ jobs:
           name: TS-Studio-Android-v2.1-beta1-debug
           path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
-          retention-days: 15
+          retention-days: 14

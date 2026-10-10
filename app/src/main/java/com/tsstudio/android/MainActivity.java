@@ -332,14 +332,14 @@ public final class MainActivity extends Activity {
             String temp = path + ".tsstudio.tmp";
             String cmd = "set -e; am force-stop " + quoteShell(pkg)
                 + "; test -f " + quoteShell(path)
-                + "; test "$(sha256sum " + quoteShell(path) + " | cut -d  -f1)" = " + quoteShell(importedHash)
+                + "; test \"$(sha256sum " + quoteShell(path) + " | cut -c 1-64)\" = " + quoteShell(importedHash)
                 + "; cp -p " + quoteShell(path) + " " + quoteShell(backup)
                 + "; cp " + quoteShell(source) + " " + quoteShell(temp)
                 + "; chown --reference=" + quoteShell(path) + " " + quoteShell(temp)
                 + "; chmod --reference=" + quoteShell(path) + " " + quoteShell(temp)
                 + "; (chcon --reference=" + quoteShell(path) + " " + quoteShell(temp) + " || restorecon " + quoteShell(temp) + ")"
                 + "; mv -f " + quoteShell(temp) + " " + quoteShell(path)
-                + "; test "$(sha256sum " + quoteShell(path) + " | cut -d  -f1)" = " + quoteShell(sha256(encoded));
+                + "; test \"$(sha256sum " + quoteShell(path) + " | cut -c 1-64)\" = " + quoteShell(sha256(encoded));
             runRoot(cmd);
             JSONObject result = new JSONObject().put("ok", true).put("result", new JSONObject()
                 .put("package", pkg).put("path", path).put("backup", backup)
