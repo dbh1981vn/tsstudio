@@ -1,0 +1,21 @@
+TS Studio Android v2.0.0-alpha1 test record — 10/10 success
+
+Commands:
+python -m unittest discover -s tests -v
+node --check app/src/main/assets/app.js
+
+10 PASS on synthetic XML fixtures:
+- Academy, Barn, Land, Museum
+- Avatar and Decoration selection / patch
+- Backup/history/path safety
+- Undo and Reset
+- Checksum/header + compressed and uncompressed codec roundtrip
+- Encrypted import, export XML/standalone/original; template size guard
+- Generic Var and integer validation
+- Failure input handling and session integrity
+- Level and Golden Pass
+- 0x79 standalone roundtrip
+
+Browser sanity: Chromium responsive UI rendered phone 412 px and tablet 1080 px; navigation click successfully changes active page, no JS exceptions. Previews are layout mockups with no file loaded, not Android/LDPlayer screenshots.
+
+NOT YET TESTED: Actual Gradle/Chaquopy Android APK build (no SDK and no external Google download in this session); install on LDPlayer, ROOT permission; write to Township; game/server save acceptance.

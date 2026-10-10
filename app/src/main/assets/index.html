@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>TS Studio Android</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="shell">
+<header class="topbar">
+    <div class="appmark" aria-hidden="true">TS</div>
+    <div class="headcopy"><b>TS Studio</b><span>ANDROID · 2.0 ALPHA</span></div>
+    <span class="offline"><span class="pulse"></span> OFFLINE</span>
+</header>
+<section class="workspace-strip" id="workspaceStrip"><span class="dot"></span><div><b id="fileName">Chưa mở file save</b><small id="fileMeta">Mở mGameInfo.xml hoặc container 0x79 để bắt đầu</small></div><span class="statebadge" id="dirtyState">SẴN SÀNG</span></section>
+<nav class="nav-scroll" aria-label="Chức năng">
+    <button class="nav active" data-page="home">⌂ <span>Tổng quan</span></button>
+    <button class="nav" data-page="profile">◫ <span>Hồ sơ</span></button>
+    <button class="nav" data-page="decor">✿ <span>Decoration</span></button>
+    <button class="nav" data-page="avatar">◎ <span>Avatar</span></button>
+    <button class="nav" data-page="barn">▣ <span>Barn</span></button>
+    <button class="nav" data-page="academy">✧ <span>Academy</span></button>
+    <button class="nav" data-page="other">✦ <span>Mở khóa</span></button>
+    <button class="nav" data-page="tools">⧉ <span>Tool</span></button>
+    <button class="nav" data-page="history">◷ <span>History</span></button>
+    <button class="nav" data-page="log">☷ <span>Nhật ký</span></button>
+</nav>
+<main class="content">
+<section class="page active" id="page-home">
+    <div class="hero"><div class="kicker">TOWNSHIP SAVE WORKSPACE</div><h1>Chỉnh sửa save thuận tiện trên Android</h1><p>Đọc file, chỉnh XML trong phiên làm việc, xem lại thay đổi và xuất file riêng. Không tự động ghi vào trò chơi.</p><div class="heroactions"><button class="btn light" data-command="open">＋ Mở file save</button><button class="btn ghost" data-command="root">⌁ Đọc từ LDPlayer ROOT</button></div></div>
+    <div class="section-head"><h2>Thông tin đang làm việc</h2><span class="muted">Chỉ hiển thị dữ liệu đã đọc</span></div>
+    <div class="stats"><div class="stat"><small>Level</small><strong id="statLevel">—</strong></div><div class="stat"><small>Coins</small><strong id="statCoins">—</strong></div><div class="stat"><small>Cash</small><strong id="statCash">—</strong></div></div>
+    <div class="grid2">
+      <div class="panel"><h3>Lưu và xuất file</h3><p>Mọi thay đổi nằm trong bộ nhớ làm việc. Chọn Export để lưu tập tin đến vị trí mong muốn.</p><div class="buttonstack"><button class="btn primary" data-command="export-standalone">Xuất save mã hóa 0x79</button><button class="btn secondary" data-command="export-xml">Xuất XML đã chỉnh sửa</button><button class="btn subtle" data-command="export-original">Xuất lại file gốc</button></div></div>
+      <div class="panel"><h3>An toàn dữ liệu</h3><p>Giữ bản gốc khi nhập file, tự lưu backup vào thư mục riêng ứng dụng; có hoàn tác hoặc đặt lại về dữ liệu đã nhập.</p><div class="buttonstack"><button class="btn secondary" data-command="undo">↶ Hoàn tác bước gần nhất</button><button class="btn danger-text" data-command="reset">Khôi phục bản nhập ban đầu</button></div></div>
+    </div>
+</section>
+<section class="page" id="page-profile">
+ <div class="section-head"><div><div class="kicker">PROFILE</div><h1>Hồ sơ thành phố</h1></div><span class="muted">Sửa từng trường</span></div>
+ <div class="grid2"><div class="panel"><h3>Tiền và tài nguyên</h3><label>Coins · money<input id="money" type="number" min="0" max="2000000000" inputmode="numeric"></label><button class="btn primary" data-command="set-money">Áp dụng Coins</button><label>Cash · moneyCash<input id="moneyCash" type="number" min="0" max="2000000000" inputmode="numeric"></label><button class="btn secondary" data-command="set-cash">Áp dụng Cash</button></div>
+ <div class="panel"><h3>Level / XP</h3><label>Town Level<input id="level" type="number" min="1" max="10000" inputmode="numeric"></label><button class="btn primary" data-command="set-level">Áp dụng Level</button><div class="warn">Việc sửa Level ở đây chỉ tác động mGameInfo. Phải đồng bộ LocalInfo trước khi ghi vào game bằng quy trình phù hợp.</div><h3>Ngày bắt đầu</h3><div class="formrow"><label>Năm<input id="startYear" type="number" min="1970" max="2100" value="2024"></label><label>Tháng<input id="startMonth" type="number" min="1" max="12" value="1"></label></div><button class="btn secondary" data-command="set-start">Áp dụng ngày bắt đầu</button></div></div>
+</section>
+<section class="page" id="page-decor"><div class="section-head"><div><div class="kicker">DECORATIONS</div><h1>Trang trí thành phố</h1></div><span class="muted" id="decorCounter">0 mục</span></div>
+ <div class="panel"><div class="formrow"><label>Nhóm<select id="decorGroup"><option value="normal">Trang trí thường</option><option value="special">Special / Expedition</option><option value="sign">Biển tên</option></select></label><label>Số lượng (1–20)<input id="decorCount" type="number" value="1" min="1" max="20"></label></div><label>Tìm ID / tên<input id="decorSearch" placeholder="Nhập tên trang trí..."></label><div class="list-head"><span>Chọn món cần điều chỉnh</span><button class="textbutton" data-command="select-visible-decor">Chọn mục đang hiển thị</button></div><div id="decorList" class="catalog"></div><button class="btn primary wide" data-command="apply-decor">Áp dụng vào XML làm việc</button></div>
+</section>
+<section class="page" id="page-avatar"><div class="section-head"><div><div class="kicker">AVATARS</div><h1>Avatar của thành phố</h1></div><span class="muted" id="avatarCounter">0 mục</span></div><div class="panel"><p>Ô được tích phản ánh trạng thái mở khóa. Bạn chỉ cần đổi các ô mong muốn, không ảnh hưởng đến avatar khác.</p><label>Tìm Avatar ID<input id="avatarSearch" placeholder="Ví dụ: 38"></label><div id="avatarList" class="catalog"></div><button class="btn primary wide" data-command="apply-avatar">Lưu các trạng thái đã thay đổi</button></div></section>
+<section class="page" id="page-barn"><div class="section-head"><div><div class="kicker">BARN INVENTORY</div><h1>Kho chứa</h1></div></div>
+ <div class="grid2"><div class="panel"><h3>Nâng cấp kho</h3><label>Barn level<input id="barnLevel" type="number" min="0" max="2000000000" value="30"></label><button class="btn primary" data-command="apply-barn-level">Áp dụng Barn level</button></div>
+ <div class="panel"><h3>Hàng hóa trong kho</h3><label>Số lượng mỗi món<input id="barnCount" type="number" value="100" min="0" max="2000000000"></label><label>Tìm theo product ID<input id="barnSearch" placeholder="wheat, corn, TNT..."></label><div id="barnList" class="catalog small"></div><button class="btn secondary wide" data-command="apply-barn-products">Áp dụng các sản phẩm chọn</button></div></div></section>
+<section class="page" id="page-academy"><div class="section-head"><div><div class="kicker">ACADEMY</div><h1>Nâng cấp Academy</h1></div></div>
+ <div class="panel"><div class="formrow"><label>Nhóm<select id="academyGroup"><option value="Factory">Industries</option><option value="Train">Trains</option><option value="Island">Islands</option></select></label><label>Time Bonus<input id="academyTime" type="number" min="0" max="101" value="100"></label></div><label>Tìm công trình<input id="academySearch" placeholder="Lọc theo ID..."></label><div id="academyList" class="catalog small"></div><button class="btn primary wide" data-command="apply-academy">Áp dụng bonus thời gian</button><p class="footnote">Dùng công thức thuộc tính và quy tắc riêng Island từ backend nguyên gốc. Các bonus chi tiết còn lại cần chuyển tiếp.</p></div>
+</section>
+<section class="page" id="page-other"><div class="section-head"><div><div class="kicker">UNLOCK</div><h1>Các thao tác mở khóa</h1></div></div>
+ <div class="grid2"><div class="panel"><h3>Golden Pass</h3><p>Áp dụng cờ Premium theo thuật toán TSVIP.</p><button class="btn primary" data-command="apply-pass">Mở Golden Pass</button></div><div class="panel"><h3>Land</h3><p>Mở các ô đất khóa theo TownGround, xử lý Object expandBuy như bản gốc.</p><button class="btn secondary" data-command="apply-land">Mở Land</button></div><div class="panel"><h3>Museum</h3><p>Điền các vật phẩm và trạng thái bảo tàng theo thuật toán hiện có.</p><button class="btn secondary" data-command="apply-museum">Mở Museum</button></div><div class="panel"><h3>Các chức năng chưa chuyển</h3><p>Clone V1/V3, New TownCity, Restore trực tiếp, cloud Drive, Send Card, Golden Pass Stage, Skin/Stickers/Profile/Achievements đang được đánh dấu chưa tích hợp. Không giả lập chức năng khi chưa kiểm tra.</p></div></div>
+</section>
+<section class="page" id="page-tools"><div class="section-head"><div><div class="kicker">TOOLS</div><h1>Encode / Decode và XML</h1></div></div>
+ <div class="panel"><h3>Codec Township 0x79</h3><p>Nhập save 0x79 hoặc XML và xuất sang định dạng khác. Nút Encode độc lập không yêu cầu file template. Giữ thêm chế độ template riêng cho trường hợp cần so sánh.</p><div class="buttonstack"><button class="btn secondary" data-command="open">Mở XML hoặc save 0x79</button><button class="btn primary" data-command="export-standalone">Encode độc lập (v1.39)</button><button class="btn secondary" data-command="export-template">Encode với template gốc</button><button class="btn subtle" data-command="export-xml">Decode → xuất XML</button></div></div>
+ <div class="panel"><h3>Sửa Var nâng cao</h3><p>Chỉ cập nhật thuộc tính <code>v</code> của Var đã tồn tại; giữ nguyên các thuộc tính và phần XML khác.</p><label>Tìm Var<input id="varSearch" placeholder="Nhập tên Var..."></label><div id="varsList" class="catalog small"></div><label>Var được chọn<input id="varKey" placeholder="money" readonly></label><label>Giá trị mới<input id="varValue" placeholder="Giá trị dạng chuỗi"></label><button class="btn secondary" data-command="set-generic">Áp dụng Var</button></div>
+</section>
+<section class="page" id="page-history"><div class="section-head"><div><div class="kicker">LOCAL BACKUP</div><h1>Lịch sử file đã nhập</h1></div></div>
+ <div class="panel"><p>Bản gốc được lưu trong thư mục riêng ứng dụng mỗi lần import. Khôi phục tại đây chỉ đưa dữ liệu vào phiên chỉnh sửa, không ghi vào game.</p><button class="btn secondary" data-command="reload-history">Làm mới lịch sử</button><div id="historyList" class="history-list"></div></div>
+</section>
+<section class="page" id="page-log"><div class="section-head"><div><div class="kicker">ACTIVITY</div><h1>Nhật ký hoạt động</h1></div><button class="textbutton" data-command="clear-log">Xóa màn hình</button></div><div class="panel log-panel"><pre id="activityLog" aria-live="polite">TS Studio Android · Nhật ký phiên làm việc
+</pre></div></section>
+</main>
+<div id="toast" class="toast" role="status"></div>
+<div id="busy" class="busy hidden"><div class="spinner"></div><p>Đang xử lý...</p></div>
+<footer class="footer">TS Studio 2.0 alpha · Offline workspace · Không tự ghi game</footer>
+</div>
+<script src="app.js"></script>
+</body></html>
